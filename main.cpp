@@ -184,6 +184,85 @@ int main()
 				}
 			}
 
+			ImGui::Separator();
+
+			{
+				ImGui::Text("Speed");
+				// ImGui::SliderInt("Speed", &drone.speed, 10, 100); Not implemented yet
+			}
+
+			ImGui::Separator();
+
+			{
+				ImGui::Text("Battery");
+				ImGui::ProgressBar(0.5f, ImVec2(0.0f, 0.0f));
+			}
+
+			ImGui::Separator();
+
+			{
+				ImGui::Text("Flight Data");
+				ImGui::Columns(2, nullptr, false);
+				ImGui::Text("SN: %s", drone.getSN().c_str());
+				ImGui::Text("Speed: %s", drone.getSpeed().c_str());
+				ImGui::Text("Battery: %s", drone.getBattery().c_str());
+				ImGui::Text("Time: %s", drone.getTime().c_str());
+				ImGui::Text("Wifi: %s", drone.getWifi().c_str());
+				ImGui::NextColumn();
+				/* Not implemented yet
+				ImGui::Text("Height: %s", drone.getHeight().c_str());
+				ImGui::Text("Temp Low: %s", drone.getTempLow().c_str());
+				ImGui::Text("Temp High: %s", drone.getTempHigh().c_str());
+				ImGui::Text("Attitude: %s", drone.getAttitude().c_str());
+				ImGui::Text("Baro: %s", drone.getBaro().c_str());
+				ImGui::Text("Acceleration: %s", drone.getAcceleration().c_str());
+				ImGui::Text("TOF: %s", drone.getTOF().c_str());
+				ImGui::Text("Flight Time: %s", drone.getFlightTime().c_str());
+				ImGui::Text("WIFI Disturb: %s", drone.getWIFIDisturb().c_str());
+				ImGui::Text("Drone Fly Time Left: %s", drone.getDroneFlyTimeLeft().c_str());
+				ImGui::Text("Drone Battery Left: %s", drone.getDroneBatteryLeft().c_str());
+				ImGui::Text("Drone Control: %s", drone.getDroneControl().c_str());
+				ImGui::Text("Drone State: %s", drone.getDroneState().c_str());
+				ImGui::Text("Drone Version: %s", drone.getDroneVersion().c_str());
+				ImGui::Text("Drone Serial Number: %s", drone.getDroneSerialNumber().c_str());
+				ImGui::Text("Drone Wifi Strength: %s", drone.getDroneWifiStrength().c_str());
+				ImGui::Text("Drone SDK Version: %s", drone.getDroneSDKVersion().c_str());
+				ImGui::Text("Drone Serial Number: %s", drone.getDroneSerialNumber().c_str());
+				ImGui::Text("Drone Serial")
+				*/
+			}
+
+			{
+				ImGui::BeginChild("ArrowButtons", { 70, 70 });
+				ImGui::Columns(3, nullptr, false);
+				ImGui::PushButtonRepeat(true);
+				for (int i = 0; i < 9; i++)
+				{
+					switch (i)
+					{
+					case 1:
+						if (ImGui::ArrowButton("##Up", ImGuiDir_Up)) {}
+						break;
+					case 3:
+						if (ImGui::ArrowButton("##Left", ImGuiDir_Left)) {}
+						break;
+					case 4:
+						if (ImGui::Button("C")) {}
+						break;
+					case 5:
+						if (ImGui::ArrowButton("##Right", ImGuiDir_Right)) {}
+						break;
+					case 7:
+						if (ImGui::ArrowButton("##Down", ImGuiDir_Down)) {}
+						break;
+					}
+					ImGui::NextColumn();
+				}
+				ImGui::PopButtonRepeat();
+				ImGui::EndChild();
+			}
+
+
 
             ImGui::End();
 
