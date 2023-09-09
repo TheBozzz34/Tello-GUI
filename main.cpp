@@ -19,9 +19,10 @@
 #include <codecvt>
 #include "util.h"
 #include <fstream> 
+#include "tello.h"
+#include <thread>
 
 #pragma comment(lib, "wbemuuid.lib")
-
 
 
 
@@ -33,6 +34,7 @@ static void glfw_error_callback(int error, const char* description)
 int main()
 {
     util utilFunction;
+	tello drone("127.0.0.1", 12345);
 	/*
     std::wstring ssid = GetConnectedWifiSSID(utilFunction);
     if (!ssid.empty()) {
@@ -121,6 +123,9 @@ int main()
 	bool show_demo_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	const char* connectedDefaultText = "false";
+	bool isConnected = false;
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -155,9 +160,28 @@ int main()
 
 			ImGui::Text("Drone");
 
+			ImGui::Text("Connected: %s", isConnected ? "true" : "false");
+
+	
+
 			if (ImGui::Button("Refresh"))
 			{
 				std::cout << "Refresh" << std::endl;
+				drone.testConnection();
+
+				isConnected = drone.isConnected();
+			}
+
+			ImGui::Separator();
+
+			{
+				ImGui::Text("Commands");
+
+				if (ImGui::Button("Takeoff"))
+				{
+					std::cout << "Takeoff" << std::endl;
+					drone.takeoff();
+				}
 			}
 
 
