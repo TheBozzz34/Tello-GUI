@@ -34,7 +34,7 @@ static void glfw_error_callback(int error, const char* description)
 int main()
 {
     util utilFunction;
-	tello drone("127.0.0.1", 12345);
+	tello drone("192.168.10.1", 8889);
 	/*
     std::wstring ssid = GetConnectedWifiSSID(utilFunction);
     if (!ssid.empty()) {
@@ -109,15 +109,6 @@ int main()
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
-
-
-	boost::asio::io_service io_service;
-	boost::asio::ip::udp::socket socket(io_service);
-	boost::asio::ip::udp::endpoint drone_endpoint;
-
-	socket.open(boost::asio::ip::udp::v4());
-
-	drone_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("192.168.10.1"), 8889);
 
 
 	bool show_demo_window = false;
