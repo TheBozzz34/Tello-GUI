@@ -15,6 +15,11 @@ Before you begin, ensure you have met the following requirements:
 - OpenGL library
 - Dear ImGui library
 
+---
+
+![demo](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/ne3uiudz.png)
+---
+
 ## Getting Started
 
 Follow these steps to get started with the project:
