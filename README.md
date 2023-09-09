@@ -17,7 +17,7 @@ Before you begin, ensure you have met the following requirements:
 
 ---
 
-![demo](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/ne3uiudz.png)
+[![demo](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/ngf72fyw.png)](https://botnet.monster/ngf72fyw.png)
 ---
 
 ## Getting Started
