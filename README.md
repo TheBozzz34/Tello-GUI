@@ -22,8 +22,8 @@ Follow these steps to get started with the project:
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/tello-drone-control.git
-   cd tello-drone-control
+   git clone https://github.com/TheBozzz34/Tello-GUI.git
+   cd Tello-GUI
    ```
 
 2. **Build the Project:**
