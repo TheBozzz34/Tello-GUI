@@ -4,6 +4,8 @@
 
 This C++ GUI project is designed to control a DJI Tello drone using OpenGL for the backend rendering, Dear ImGui for the graphical user interface (GUI), and Boost.Asio for UDP communication with the drone. With this application, you can easily control your Tello drone and monitor its status through a user-friendly interface.
 
+Cumminaction based off the [Tello SDK](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20SDK%202.0%20User%20Guide.pdf)
+
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
@@ -53,7 +55,7 @@ If you would like to contribute to this project, please fork the repository and 
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the Apache License 2.0. See the LICENSE file for details.
 
 ## Acknowledgments
 
