@@ -21,6 +21,7 @@
 #include <fstream> 
 #include "tello.h"
 #include <thread>
+#include <shellapi.h>
 
 #pragma comment(lib, "wbemuuid.lib")
 
@@ -35,6 +36,8 @@ int main()
 {
     util utilFunction;
 	tello drone("192.168.10.1", 8889);
+
+	const char* app_version = "0.0.1.1";
 	/*
     std::wstring ssid = GetConnectedWifiSSID(utilFunction);
     if (!ssid.empty()) {
@@ -117,7 +120,6 @@ int main()
 	const char* connectedDefaultText = "false";
 	bool isConnected = false;
 
-
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -160,7 +162,7 @@ int main()
 				std::cout << "Refresh" << std::endl;
 				drone.testConnection();
 
-				isConnected = drone.isConnected();
+isConnected = drone.isConnected();
 			}
 
 			ImGui::Separator();
@@ -255,8 +257,45 @@ int main()
 
 
 
-            ImGui::End();
+			ImGui::End();
 
+		}
+
+		{
+			ImGui::Begin("Console");
+
+			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
+			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+
+			ImGui::End();
+		}
+
+		{
+			ImGui::Begin("Settings");
+
+			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
+			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+
+			ImGui::End();
+		}
+
+		{
+			ImGui::Begin("About");
+			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
+			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+
+			ImGui::Text("Tello Control");
+			ImGui::Text("Version: %s", app_version);
+			ImGui::Text("By: Necrozma");
+			if (ImGui::Button("GitHub"))
+			{
+				ShellExecute(0, 0, L"http://github.com/thebozzz34/Tello-GUI", 0, 0, SW_SHOW);
+			}
+			char buf[16];
+			sprintf_s(buf, "%d fps", int(ImGui::GetIO().Framerate));
+			ImGui::Text(buf);
+
+			ImGui::End();
 		}
 
 		ImGui::Render();
@@ -270,14 +309,17 @@ int main()
 		glfwSwapBuffers(window);
 	}
 
-
+	// Cleanup ImGui resources
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-
+	// Cleanup GLFW resources
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
+
+
 	return 0;
 
 }
