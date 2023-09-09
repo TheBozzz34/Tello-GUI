@@ -6,12 +6,10 @@
 #include <imgui_stdlib.h>
 #include <iostream>
 #include <boost/asio.hpp>
+#include <map>
+#include <cassert>
 
 
-void sendUDPCommand(boost::asio::ip::udp::socket& socket, boost::asio::ip::udp::endpoint& drone_endpoint, std::string& command)
-{
-	socket.send_to(boost::asio::buffer(command), drone_endpoint);
-}
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -20,6 +18,9 @@ static void glfw_error_callback(int error, const char* description)
 
 int main()
 {
+	std::map<std::string, int> tello_commands;
+
+
 	std::cout << "Initilizing GLFW!" << std::endl;
 
 	if (!glfwInit())
@@ -85,8 +86,7 @@ int main()
 
 	drone_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("192.168.10.1"), 8889);
 
-	// std::string command = "command";
-	// sendUDPCommand(socket, drone_endpoint, command);
+
 	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
