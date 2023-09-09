@@ -1,0 +1,14 @@
+
+There is 1 interface on the system: 
+
+    Name                   : Wi-Fi
+    Description            : Qualcomm QCA9377 802.11ac Wireless Adapter
+    GUID                   : 8223f20b-8727-43fc-afbd-24215a5558e1
+    Physical address       : 8c:c8:4b:f4:10:c9
+    Interface type         : Primary
+    State                  : disconnected
+    Radio status           : Hardware On
+                             Software Off
+
+    Hosted network status  : Not available
+

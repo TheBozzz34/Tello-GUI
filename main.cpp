@@ -1,3 +1,7 @@
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
@@ -8,6 +12,16 @@
 #include <boost/asio.hpp>
 #include <map>
 #include <cassert>
+#include <string>
+#include <windows.h>
+#include <wbemidl.h>
+#include <comdef.h>
+#include <codecvt>
+#include "util.h"
+#include <fstream> 
+
+#pragma comment(lib, "wbemuuid.lib")
+
 
 
 
@@ -18,7 +32,24 @@ static void glfw_error_callback(int error, const char* description)
 
 int main()
 {
-	std::map<std::string, int> tello_commands;
+    util utilFunction;
+	/*
+    std::wstring ssid = GetConnectedWifiSSID(utilFunction);
+    if (!ssid.empty()) {
+        wprintf(L"Connected Wi-Fi SSID: %s\n", ssid.c_str());
+    }
+    else {
+        wprintf(L"Unable to retrieve Wi-Fi SSID information.\n");
+        ssid = L"Unable to retrieve Wi-Fi SSID information.";
+    }
+	
+
+
+    const char* ssidcstr = utilFunction.WStringToConstChar(ssid);
+
+    std::cout << ssidcstr << std::endl;
+	*/
+
 
 
 	std::cout << "Initilizing GLFW!" << std::endl;
@@ -87,8 +118,9 @@ int main()
 	drone_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("192.168.10.1"), 8889);
 
 
-	bool show_demo_window = true;
+	bool show_demo_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -100,6 +132,38 @@ int main()
 
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
+
+		{
+			ImGui::Begin("Setup");
+
+            
+			ImGui::Text("Network");
+			std::string ssidText;
+			if (ImGui::Button("Test SSID"))
+			{
+				utilFunction.exec("netsh wlan show interfaces > ssid.txt");
+				std::ifstream ReadFile("ssid.txt");
+				while (getline(ReadFile, ssidText)) {
+					// Output the text from the file
+					std::cout << ssidText << std::endl;
+				}
+				ReadFile.close();
+
+			}
+
+			ImGui::Separator();
+
+			ImGui::Text("Drone");
+
+			if (ImGui::Button("Refresh"))
+			{
+				std::cout << "Refresh" << std::endl;
+			}
+
+
+            ImGui::End();
+
+		}
 
 		ImGui::Render();
 		int display_w, display_h;
