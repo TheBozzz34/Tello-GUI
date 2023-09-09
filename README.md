@@ -22,8 +22,8 @@ Follow these steps to get started with the project:
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/TheBozzz34/Tello-GUI.git
-   cd Tello-GUI
+    $ git clone https://github.com/TheBozzz34/Tello-GUI.git
+    $ cd Tello-GUI
    ```
 
 2. **Build the Project:**
