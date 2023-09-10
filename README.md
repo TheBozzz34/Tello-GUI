@@ -16,7 +16,9 @@ Communication based off the [Tello SDK](https://dl-cdn.ryzerobotics.com/download
 - Network Test
 - Refresh connection button
 
+### Signing
 
+All my code in the form of commits, releases, etc. etc. is digitally signed with my personal GPG key [F2FE38E55D832A82](https://keys.openpgp.org/vks/v1/by-fingerprint/0951795ECB2C6DFD86DF2F7BF2FE38E55D832A82). 
 
 
 ## Prerequisites
