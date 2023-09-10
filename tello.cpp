@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <spdlog/spdlog.h>
 
 tello::tello(std::string ip, int port)
 {
@@ -13,7 +14,7 @@ tello::tello(std::string ip, int port)
 void sendWaitingMessage()
 {
     for (int i = 0; i < 5; ++i) {
-        std::cout << "Waiting for response..." << std::endl;
+        spdlog::info("Waiting for response...");
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
@@ -36,12 +37,12 @@ int tello::send_command(const std::string& command)
 
         if (err)
         {
-            std::cout << "Error: " << err.message() << std::endl;
+            spdlog::error("Error: {}", err.message());
             return;  // Don't proceed if there was an error sending the command.
         }
         else
         {
-            std::cout << "Command sent!" << std::endl;
+            spdlog::info("Command sent!");
         }
 
         boost::asio::ip::udp::endpoint receive_endpoint(boost::asio::ip::address::from_string(this->ip), this->port);
@@ -55,7 +56,7 @@ int tello::send_command(const std::string& command)
             if (!ec)
             {
                 // Timeout occurred, handle the timeout here.
-                std::cout << "Timeout: Response not received within 5 seconds." << std::endl;
+                spdlog::error("Timeout occurred, handle the timeout here.");
                 socket.cancel();  // Cancel the receive operation.
             }
             });
@@ -67,12 +68,12 @@ int tello::send_command(const std::string& command)
                 timer.cancel();  // Cancel the timer since we received a response.
                 if (!recv_error)
                 {
-                    std::cout << "Response: " << this->buffer << std::endl;
+                    spdlog::info("Response: {}", this->buffer);
 
                 }
                 else
                 {
-                    std::cout << "Error receiving response: " << recv_error.message() << std::endl;
+                    spdlog::error("Error receiving response: {}", recv_error.message());
                 }
             });
 
@@ -109,12 +110,12 @@ void tello::testConnection()
 
         if (err)
         {
-            std::cout << "Error: " << err.message() << std::endl;
+            spdlog::error("Error: {}", err.message());
             return;  // Don't proceed if there was an error sending the command.
         }
         else
         {
-            std::cout << "Command sent!" << std::endl;
+            spdlog::info("Command sent!");
         }
 
         boost::asio::ip::udp::endpoint receive_endpoint(boost::asio::ip::address::from_string(this->ip), this->port);
@@ -136,7 +137,7 @@ void tello::testConnection()
                 }
                 else
                 {
-                    std::cout << "Error receiving response: " << recv_error.message() << std::endl;
+                    spdlog::error("Error receiving response: {}", recv_error.message());
                 }
             });
 

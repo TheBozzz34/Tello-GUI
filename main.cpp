@@ -4,24 +4,31 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <spdlog/spdlog.h>
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_stdlib.h>
+
 #include <iostream>
-#include <boost/asio.hpp>
 #include <map>
 #include <cassert>
 #include <string>
+#include <thread>
+#include <fstream> 
+#include <codecvt>
+
+#include <boost/asio.hpp>
+
 #include <windows.h>
 #include <wbemidl.h>
 #include <comdef.h>
-#include <codecvt>
-#include "util.h"
-#include <fstream> 
-#include "tello.h"
-#include <thread>
 #include <shellapi.h>
+
+#include "util.h"
+#include "tello.h"
 
 #pragma comment(lib, "wbemuuid.lib")
 
@@ -37,36 +44,18 @@ int main()
     util utilFunction;
 	tello drone("192.168.10.1", 8889);
 
-	const char* app_version = "0.0.1.1";
-	/*
-    std::wstring ssid = GetConnectedWifiSSID(utilFunction);
-    if (!ssid.empty()) {
-        wprintf(L"Connected Wi-Fi SSID: %s\n", ssid.c_str());
-    }
-    else {
-        wprintf(L"Unable to retrieve Wi-Fi SSID information.\n");
-        ssid = L"Unable to retrieve Wi-Fi SSID information.";
-    }
-	
+	const char* app_version = "0.0.1.2";
 
-
-    const char* ssidcstr = utilFunction.WStringToConstChar(ssid);
-
-    std::cout << ssidcstr << std::endl;
-	*/
-
-
-
-	std::cout << "Initilizing GLFW!" << std::endl;
+	spdlog::info("Initilizing GLFW!");
 
 	if (!glfwInit())
 	{
-		std::cout << "Unable to init glfw!" << std::endl;
+		spdlog::critical("Unable to initialize GLFW!");
 		return -1;
 	}
 	else
 	{
-		std::cout << "GLFW initilizied!" << std::endl;
+		spdlog::info("GLFW initilizied!");
 	}
 
 	glfwSetErrorCallback(glfw_error_callback);
@@ -76,10 +65,10 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Hello World!", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(800, 600, "Tello GUI!", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
+		spdlog::critical("Unable to create GLFW window!");
 		glfwTerminate();
 		return -1;
 	}
@@ -88,12 +77,12 @@ int main()
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		spdlog::critical("Unable to initialize GLAD!");
 		return -1;
 	}
 	else
 	{
-		std::cout << "GLAD initilizied!" << std::endl;
+		spdlog::info("GLAD initilizied!");
 	}
 
 	IMGUI_CHECKVERSION();
@@ -159,7 +148,7 @@ int main()
 
 			if (ImGui::Button("Refresh"))
 			{
-				std::cout << "Refresh" << std::endl;
+				spdlog::info("Refreshing drone connection!");
 				drone.testConnection();
 
 isConnected = drone.isConnected();
@@ -172,7 +161,7 @@ isConnected = drone.isConnected();
 
 				if (ImGui::Button("Takeoff"))
 				{
-					std::cout << "Takeoff" << std::endl;
+					spdlog::info("Taking off!");
 					drone.takeoff();
 				}
 			}
@@ -317,8 +306,6 @@ isConnected = drone.isConnected();
 	// Cleanup GLFW resources
 	glfwDestroyWindow(window);
 	glfwTerminate();
-
-
 
 	return 0;
 

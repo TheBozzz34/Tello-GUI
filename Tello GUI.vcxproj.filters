@@ -29,13 +29,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="imgui\examples\libs\glfw\include\GLFW\glfw3.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="tello.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\examples\libs\glfw\include\GLFW\glfw3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
