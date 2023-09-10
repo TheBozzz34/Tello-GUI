@@ -22,7 +22,7 @@ Before you begin, ensure you have met the following requirements:
 
 [![demo1](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/ngf72fyw.png)](https://botnet.monster/ngf72fyw.png)
 
-[![demo2](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/lgq2l5ft.png)](https://botnet.monster/lgq2l5ft.png)
+[![demo2](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/14srricn.png)](https://botnet.monster/14srricn.png)
 ---
 
 ## Getting Started
