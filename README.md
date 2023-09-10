@@ -38,7 +38,7 @@ Follow these steps to get started with the project:
 
 2. **Build the Project:**
 
-    Use your preferred C++ build system or IDE to compile the project, ensuring that you link the required libraries (Boost.Asio, OpenGL, and Dear ImGui).
+    Use your preferred C++ build system or IDE to compile the project, ensuring that you link the required libraries (Boost.Asio, OpenGL, Dear ImGui and spdlog).
 
 3. **Connect to the Tello Drone:**
         Power on your DJI Tello drone and connect your computer to its Wi-Fi network.
