@@ -40,14 +40,14 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 int main()
-{
-    util utilFunction;
+{	
+    	util utilFunction;
 	tello drone("192.168.10.1", 8889);
-
+	
 	const char* app_version = "0.0.1.2";
-
+	
 	spdlog::info("Initilizing GLFW!");
-
+	
 	if (!glfwInit())
 	{
 		spdlog::critical("Unable to initialize GLFW!");
@@ -57,14 +57,14 @@ int main()
 	{
 		spdlog::info("GLFW initilizied!");
 	}
-
+	
 	glfwSetErrorCallback(glfw_error_callback);
-
+	
 	const char* glsl_version = "#version 150";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	
 	GLFWwindow* window = glfwCreateWindow(800, 600, "Tello GUI!", nullptr, nullptr);
 	if (window == nullptr)
 	{
@@ -74,7 +74,7 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
-
+	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		spdlog::critical("Unable to initialize GLAD!");
@@ -84,46 +84,46 @@ int main()
 	{
 		spdlog::info("GLAD initilizied!");
 	}
-
+	
 	IMGUI_CHECKVERSION();
-
+	
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-
+	
+	
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsLight();
-
+	
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
-
-
-
+	
+	
+	
 	bool show_demo_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+	
 	const char* connectedDefaultText = "false";
 	bool isConnected = false;
-
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-
+	
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-
+	
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
-
+	
 		{
 			ImGui::Begin("Setup");
-
-            
+	
+	    
 			ImGui::Text("Network");
 			std::string ssidText;
 			if (ImGui::Button("Test SSID"))
@@ -135,53 +135,53 @@ int main()
 					std::cout << ssidText << std::endl;
 				}
 				ReadFile.close();
-
-			}
-
-			ImGui::Separator();
-
-			ImGui::Text("Drone");
-
-			ImGui::Text("Connected: %s", isConnected ? "true" : "false");
-
 	
-
+			}
+	
+			ImGui::Separator();
+	
+			ImGui::Text("Drone");
+	
+			ImGui::Text("Connected: %s", isConnected ? "true" : "false");
+	
+	
+	
 			if (ImGui::Button("Refresh"))
 			{
 				spdlog::info("Refreshing drone connection!");
 				drone.testConnection();
-
-isConnected = drone.isConnected();
+	
+	isConnected = drone.isConnected();
 			}
-
+	
 			ImGui::Separator();
-
+	
 			{
 				ImGui::Text("Commands");
-
+	
 				if (ImGui::Button("Takeoff"))
 				{
 					spdlog::info("Taking off!");
 					drone.takeoff();
 				}
 			}
-
+	
 			ImGui::Separator();
-
+	
 			{
 				ImGui::Text("Speed");
 				// ImGui::SliderInt("Speed", &drone.speed, 10, 100); Not implemented yet
 			}
-
+	
 			ImGui::Separator();
-
+	
 			{
 				ImGui::Text("Battery");
 				ImGui::ProgressBar(0.5f, ImVec2(0.0f, 0.0f));
 			}
-
+	
 			ImGui::Separator();
-
+	
 			{
 				ImGui::Text("Flight Data");
 				ImGui::Columns(2, nullptr, false);
@@ -213,7 +213,7 @@ isConnected = drone.isConnected();
 				ImGui::Text("Drone Serial")
 				*/
 			}
-
+	
 			{
 				ImGui::BeginChild("ArrowButtons", { 70, 70 });
 				ImGui::Columns(3, nullptr, false);
@@ -243,36 +243,36 @@ isConnected = drone.isConnected();
 				ImGui::PopButtonRepeat();
 				ImGui::EndChild();
 			}
-
-
-
+	
+	
+	
 			ImGui::End();
-
+	
 		}
-
+	
 		{
 			ImGui::Begin("Console");
-
+	
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
 			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-
+	
 			ImGui::End();
 		}
-
+	
 		{
 			ImGui::Begin("Settings");
-
+	
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
 			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-
+	
 			ImGui::End();
 		}
-
+	
 		{
 			ImGui::Begin("About");
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
 			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-
+	
 			ImGui::Text("Tello Control");
 			ImGui::Text("Version: %s", app_version);
 			ImGui::Text("By: Necrozma");
@@ -283,10 +283,10 @@ isConnected = drone.isConnected();
 			char buf[16];
 			sprintf_s(buf, "%d fps", int(ImGui::GetIO().Framerate));
 			ImGui::Text(buf);
-
+	
 			ImGui::End();
 		}
-
+	
 		ImGui::Render();
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -294,19 +294,19 @@ isConnected = drone.isConnected();
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+	
 		glfwSwapBuffers(window);
 	}
-
+	
 	// Cleanup ImGui resources
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-
+	
 	// Cleanup GLFW resources
 	glfwDestroyWindow(window);
 	glfwTerminate();
-
+	
 	return 0;
 
 }
