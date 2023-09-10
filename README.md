@@ -8,6 +8,17 @@ This C++ GUI project is designed to control a DJI Tello drone using [OpenGL](htt
 
 Communication based off the [Tello SDK](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20SDK%202.0%20User%20Guide.pdf)
 
+---
+
+## Working features
+
+- Takeoff (probably)
+- Network Test
+- Refresh connection button
+
+
+
+
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
