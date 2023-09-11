@@ -437,3 +437,6 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++
 
 ssid.txt # SSID text file
+
+.sentry-native/ #Sentry DB
+/.sentry-native
