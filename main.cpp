@@ -23,13 +23,15 @@
 
 #include <boost/asio.hpp>
 
-#include <windows.h>
+#include <Windows.h>
+#include <shlobj.h>
 #include <wbemidl.h>
 #include <comdef.h>
 #include <shellapi.h>
 
 #include "util.h"
 #include "tello.h"
+
 
 
 
@@ -59,6 +61,16 @@ void AppendToBuffer(const char* str, char* inputBuffer)
 	memcpy(&inputBuffer[strlen(inputBuffer)], str, len);
 	inputBuffer[strlen(inputBuffer)] = '\n';
 	inputBuffer[strlen(inputBuffer)] = '\0';
+}
+
+void ExportBufferToFile(const char* buffer, const char* path)
+{
+	std::ofstream file;
+	file.open(path);
+	file << buffer;
+	file.close();
+
+	spdlog::info("Exported buffer to {}", path);
 }
 
 
@@ -393,10 +405,52 @@ int main()
 		{
 			ImGui::Begin("Console");
 
+
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
 			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 
+
 			ImGui::Text("Console");
+
+			ImGui::SameLine();
+			if (ImGui::Button("Clear"))
+			{
+				inputBuffer[0] = '\0';
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Export"))
+			{
+				
+				BROWSEINFO bi = { 0 };
+				char selectedPath[MAX_PATH] = { 0 };
+
+				bi.hwndOwner = NULL; 
+				bi.pidlRoot = NULL;  
+				bi.pszDisplayName = (LPWSTR)selectedPath;
+				bi.lpszTitle = (LPWSTR)"Select a directory";  // Dialog title
+				bi.ulFlags = BIF_RETURNONLYFSDIRS; 
+
+				LPITEMIDLIST pidl = SHBrowseForFolderA((LPBROWSEINFOA) & bi);
+
+				if (pidl != NULL) {
+					// Convert the selected PIDL to a file system path
+					if (SHGetPathFromIDListA(pidl, selectedPath)) {
+						std::string path = selectedPath;
+						path += "\\console.txt";
+						ExportBufferToFile(inputBuffer, path.c_str());
+						std::string message = "Exported buffer to " + path;
+						AppendToBuffer(message.c_str(), inputBuffer);
+					}
+					// Free the PIDL
+					IMalloc* pMalloc;
+					if (SUCCEEDED(SHGetMalloc(&pMalloc))) {
+						pMalloc->Free(pidl);
+						pMalloc->Release();
+					}
+				}
+				//ExportBufferToFile(inputBuffer, "console.txt");
+			}
+
 			ImGui::Separator();
 
 			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar);
