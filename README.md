@@ -10,11 +10,23 @@ Communication based off the [Tello SDK](https://dl-cdn.ryzerobotics.com/download
 
 ---
 
-## Working features
+## Working commands
 
-- Takeoff (probably)
-- Network Test
-- Refresh connection button
+| Command   | Description                          | 
+|-----------|--------------------------------------|
+| takeoff   | Auto takeoff.                        |  
+| land      | Auto landing.                        |   
+| emergency | Stop motors immediately.             |   
+| up x      | Ascend to “x” cm.                    |   
+| down x    | down “x” Descend to “x” cm.          |   
+| left x    | Fly left for “x” cm                  |  
+| right x   | Fly right for “x” cm                 |   
+| forward x | Fly forward for “x” cm               |  
+| back x    | Fly back for “x” cm                  |  
+| cw x      | Rotate “x” degrees clockwise.        |  
+| ccw x     | Rotate “x” degrees counterclockwise. |   
+
+
 
 ### Signing
 
