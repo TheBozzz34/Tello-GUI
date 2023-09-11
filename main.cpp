@@ -84,7 +84,7 @@ int main()
     util utilFunction;
 	tello drone("127.0.0.1", 8889);
 
-	const char* app_version = "0.0.2.0";
+	const char* app_version = "0.0.2.1";
 
 	spdlog::info("Initilizing GLFW!");
 
