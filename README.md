@@ -1,6 +1,8 @@
 # DJI Tello Drone Control GUI
 
-# This project is in early alpha and is not really all that usable yet.
+### This project is in the early stages of development, so expect bugs and missing features.
+
+## At this time, only Windows is supported.
 
 ![Tello Drone](https://m.media-amazon.com/images/I/61mZiDc5wPL.jpg)
 
