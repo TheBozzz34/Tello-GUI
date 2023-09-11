@@ -527,6 +527,23 @@ int main()
 			ImGui::Checkbox("##ShowDemoWindow", &show_demo_window);
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
+			if (DEBUG)
+			{
+				ImGui::Text("Debug mode enabled at compile time");
+				if (ImGui::Button("Send test Sentry message"))
+				{
+					sentry_capture_event(sentry_value_new_message_event(
+						/*   level */ SENTRY_LEVEL_INFO,
+						/*  logger */ "custom",
+						/* message */ "It works!"
+					));
+				}
+			} 
+			else
+			{
+				ImGui::Text("Debug mode disabled at compile time");
+			}
+
 
 			ImGui::End();
 		}
