@@ -19,6 +19,7 @@
 #include <thread>
 #include <fstream> 
 #include <codecvt>
+#include <ctime>
 
 #include <boost/asio.hpp>
 
@@ -30,8 +31,35 @@
 #include "util.h"
 #include "tello.h"
 
+
+
 #pragma comment(lib, "wbemuuid.lib")
 
+void AppendToBuffer(const char* str, char* inputBuffer)
+{
+	// Get the current time
+	time_t currentTime;
+	time(&currentTime);
+
+	// Declare a structure to hold the local time
+	struct tm timeInfo;
+	localtime_s(&timeInfo, &currentTime);
+
+	// Format the time as a string
+	char timeStr[12]; // Adjust the size as needed for the time format
+	strftime(timeStr, sizeof(timeStr), "[%H:%M:%S]", &timeInfo);
+
+	// Append the formatted time to the buffer
+	int len = strlen(timeStr);
+	memcpy(&inputBuffer[strlen(inputBuffer)], timeStr, len);
+	inputBuffer[strlen(inputBuffer)] = ' '; // Add a space between time and the original string
+
+	// Append the original string
+	len = strlen(str);
+	memcpy(&inputBuffer[strlen(inputBuffer)], str, len);
+	inputBuffer[strlen(inputBuffer)] = '\n';
+	inputBuffer[strlen(inputBuffer)] = '\0';
+}
 
 
 static void glfw_error_callback(int error, const char* description)
@@ -42,9 +70,9 @@ static void glfw_error_callback(int error, const char* description)
 int main()
 {
     util utilFunction;
-	tello drone("192.168.10.1", 8889);
+	tello drone("127.0.0.1", 8889);
 
-	const char* app_version = "0.0.1.2";
+	const char* app_version = "0.0.2.0";
 
 	spdlog::info("Initilizing GLFW!");
 
@@ -91,6 +119,7 @@ int main()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 
 	// Setup Dear ImGui style
@@ -106,8 +135,12 @@ int main()
 	bool show_demo_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+
 	const char* connectedDefaultText = "false";
 	bool isConnected = false;
+
+	static char inputBuffer[256] = "";
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -149,9 +182,12 @@ int main()
 			if (ImGui::Button("Refresh"))
 			{
 				spdlog::info("Refreshing drone connection!");
+
+				AppendToBuffer("Refreshing drone connection!", inputBuffer);
+
 				drone.testConnection();
 
-isConnected = drone.isConnected();
+				isConnected = drone.isConnected();
 			}
 
 			ImGui::Separator();
@@ -162,7 +198,66 @@ isConnected = drone.isConnected();
 				if (ImGui::Button("Takeoff"))
 				{
 					spdlog::info("Taking off!");
-					drone.takeoff();
+					int response = drone.takeoff();
+					if (response == 0)
+					{
+						AppendToBuffer("Taking off!", inputBuffer);
+					}
+					else
+					{
+						AppendToBuffer("Error taking off!", inputBuffer);
+					}
+					spdlog::info("Response: {}", response);
+				}
+
+				if (ImGui::Button("Land"))
+				{
+					spdlog::info("Landing!");
+					int response = drone.land();
+
+					if (response == 0)
+					{
+						AppendToBuffer("Landing!", inputBuffer);
+					}
+					else
+					{
+						AppendToBuffer("Error landing!", inputBuffer);
+					}
+
+					spdlog::info("Response: {}", response);
+				}
+
+				if (ImGui::Button("Emergency"))
+				{
+					spdlog::info("Emergency!");
+					int response = drone.emergency();
+
+					if (response == 0)
+					{
+						AppendToBuffer("Emergency!", inputBuffer);
+					}
+					else
+					{
+						AppendToBuffer("Error sending emergency command!", inputBuffer);
+					}
+
+					spdlog::info("Response: {}", response);
+				}
+
+				if (ImGui::Button("Stop"))
+				{
+					spdlog::info("Stopping!");
+					int response = drone.stop();
+
+					if (response == 0)
+					{
+						AppendToBuffer("Stopping!", inputBuffer);
+					}
+					else
+					{
+						AppendToBuffer("Error stopping!", inputBuffer);
+					}
+					spdlog::info("Response: {}", response);
 				}
 			}
 
@@ -223,23 +318,68 @@ isConnected = drone.isConnected();
 					switch (i)
 					{
 					case 1:
-						if (ImGui::ArrowButton("##Up", ImGuiDir_Up)) {}
+						if (ImGui::ArrowButton("##Up", ImGuiDir_Up)) 
+						{
+							drone.up(20);
+						}
 						break;
 					case 3:
-						if (ImGui::ArrowButton("##Left", ImGuiDir_Left)) {}
+						if (ImGui::ArrowButton("##Left", ImGuiDir_Left)) 
+						{
+							drone.left(20);
+						}
 						break;
 					case 4:
 						if (ImGui::Button("C")) {}
 						break;
 					case 5:
-						if (ImGui::ArrowButton("##Right", ImGuiDir_Right)) {}
+						if (ImGui::ArrowButton("##Right", ImGuiDir_Right)) 
+						{
+							drone.right(20);
+						}
 						break;
 					case 7:
-						if (ImGui::ArrowButton("##Down", ImGuiDir_Down)) {}
+						if (ImGui::ArrowButton("##Down", ImGuiDir_Down)) 
+						{
+							drone.down(20);
+						}
 						break;
 					}
 					ImGui::NextColumn();
 				}
+				ImGui::PopButtonRepeat();
+				ImGui::EndChild();
+
+				ImGui::BeginChild("RotateButtons", { 210, 70 }); // Increase the width to accommodate three buttons with spacing
+				ImGui::Columns(3, nullptr, false);
+				ImGui::PushButtonRepeat(true);
+
+				for (int i = 0; i < 9; i++)
+				{
+					switch (i)
+					{
+					case 1:
+						if (ImGui::ArrowButton("##CW", ImGuiDir_Right))
+						{
+							drone.cw(20);
+						}
+						break;
+					case 3:
+						if (ImGui::ArrowButton("##CCW", ImGuiDir_Left))
+						{
+							drone.ccw(20);
+						}
+						break;
+					}
+
+					if (i < 8)
+					{
+						ImGui::SameLine(); // Add this to keep the buttons on the same line with spacing
+					}
+
+					ImGui::NextColumn();
+				}
+
 				ImGui::PopButtonRepeat();
 				ImGui::EndChild();
 			}
@@ -256,14 +396,45 @@ isConnected = drone.isConnected();
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
 			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 
+			ImGui::Text("Console");
+			ImGui::Separator();
+
+			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
+			ImGui::TextUnformatted(inputBuffer);
+			ImGui::PopStyleVar();
+			ImGui::EndChild();
+
+
+
 			ImGui::End();
 		}
 
 		{
 			ImGui::Begin("Settings");
 
+			ImGui::SetWindowPos(
+				ImVec2(0, 0),
+				true);
+
+
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
 			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+
+			ImGui::Text("Settings");
+			ImGui::Separator();
+
+			ImGui::Text("Drone IP");
+			// ImGui::InputText("##DroneIP", &drone.ip); // TODO: Fix this
+
+			ImGui::Text("Drone Port");
+			// ImGui::InputInt("##DronePort", &drone.port); // TODO: Fix this
+
+			ImGui::Text("Show Demo Window");
+			ImGui::Checkbox("##ShowDemoWindow", &show_demo_window);
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
 
 			ImGui::End();
 		}
@@ -280,10 +451,6 @@ isConnected = drone.isConnected();
 			{
 				ShellExecute(0, 0, L"http://github.com/thebozzz34/Tello-GUI", 0, 0, SW_SHOW);
 			}
-			char buf[16];
-			sprintf_s(buf, "%d fps", int(ImGui::GetIO().Framerate));
-			ImGui::Text(buf);
-
 			ImGui::End();
 		}
 
@@ -310,3 +477,4 @@ isConnected = drone.isConnected();
 	return 0;
 
 }
+
