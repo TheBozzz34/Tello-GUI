@@ -2,6 +2,18 @@
 #define UNICODE
 #endif
 
+#ifndef NDEBUG
+// Production builds should set NDEBUG=1
+#define NDEBUG false
+#else
+#define NDEBUG true
+#endif
+
+#ifndef DEBUG
+#define DEBUG !NDEBUG
+#endif
+
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -82,9 +94,21 @@ static void glfw_error_callback(int error, const char* description)
 int main()
 {
     util utilFunction;
-	tello drone("127.0.0.1", 8889);
+	tello drone("192.168.10.1", 8889);
 
-	const char* app_version = "0.0.2.1";
+	if (DEBUG)
+	{
+		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::debug); });
+		spdlog::debug("Debug mode enabled!");
+
+	} 
+	else
+	{
+		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::info); });
+		spdlog::info("Debug mode disabled!");
+	}
+
+	const char* app_version = "0.0.2.2";
 
 	spdlog::info("Initilizing GLFW!");
 
