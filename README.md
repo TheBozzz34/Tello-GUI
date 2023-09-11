@@ -44,7 +44,8 @@ Before you begin, ensure you have met the following requirements:
 - OpenGL library
 - Dear ImGui library
 - spdlog library
-- Crashpad, in the form of `crashpad_handler.exe`
+- Sentry.io Native SDK
+- Google Crashpad, in the form of `crashpad_handler.exe`
 
 ---
 
@@ -98,7 +99,7 @@ This project is licensed under the Apache License 2.0. See the LICENSE file for 
 ## Acknowledgments
 
     DJI Tello for providing an affordable and accessible drone platform.
-    The developers of Boost.Asio, OpenGL, Dear ImGui, and spdlog for their excellent libraries.
+    The developers of Boost.Asio, OpenGL, Dear ImGui, Google, Sentry.io, and spdlog for their excellent libraries.
 
 Contact
 
