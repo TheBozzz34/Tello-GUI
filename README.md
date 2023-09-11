@@ -44,6 +44,7 @@ Before you begin, ensure you have met the following requirements:
 - OpenGL library
 - Dear ImGui library
 - spdlog library
+- Crashpad, in the form of `crashpad_handler.exe`
 
 ---
 
