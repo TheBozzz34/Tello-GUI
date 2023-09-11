@@ -44,6 +44,8 @@
 #include "util.h"
 #include "tello.h"
 
+#include <sentry.h>
+
 
 
 
@@ -98,17 +100,29 @@ int main()
 
 	if (DEBUG)
 	{
-		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::debug); });
 		spdlog::debug("Debug mode enabled!");
+		sentry_options_t* options = sentry_options_new();
+		sentry_options_set_dsn(options, "https://d08305e3156f47698859d549119368ce@o561860.ingest.sentry.io/4505859179937792");
+		sentry_options_set_database_path(options, ".sentry-native");
+		sentry_options_set_release(options, "tello-gui@0.0.2.3");
+		sentry_options_set_debug(options, 1);
+		sentry_init(options);
+		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::debug); });
 
 	} 
 	else
 	{
-		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::info); });
 		spdlog::info("Debug mode disabled!");
+		sentry_options_t* options = sentry_options_new();
+		sentry_options_set_dsn(options, "https://d08305e3156f47698859d549119368ce@o561860.ingest.sentry.io/4505859179937792");
+		sentry_options_set_database_path(options, ".sentry-native");
+		sentry_options_set_release(options, "tello-gui@0.0.2.3");
+		sentry_options_set_debug(options, 0);
+		sentry_init(options);
+		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::info); });
 	}
 
-	const char* app_version = "0.0.2.2";
+	const char* app_version = "0.0.2.3";
 
 	spdlog::info("Initilizing GLFW!");
 
@@ -551,6 +565,8 @@ int main()
 	// Cleanup GLFW resources
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
+	sentry_close();
 
 	return 0;
 
