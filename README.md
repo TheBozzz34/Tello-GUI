@@ -1,6 +1,6 @@
 # DJI Tello Drone Control GUI
 
-# This project is in early alpha and is not usable in an actual enviroment yet.
+# This project is in early alpha and is not really all that usable yet.
 
 ![Tello Drone](https://m.media-amazon.com/images/I/61mZiDc5wPL.jpg)
 
