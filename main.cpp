@@ -70,6 +70,9 @@ int main()
 {
     util utilFunction;
 	tello drone("192.168.10.1", 8889);
+	const char* app_version = "0.0.3.1";
+	std::string version_string = "tello-gui@" + std::string(app_version);
+	const char* version_cstr = version_string.c_str();
 
 	if (DEBUG)
 	{
@@ -77,7 +80,7 @@ int main()
 		sentry_options_t* options = sentry_options_new();
 		sentry_options_set_dsn(options, "https://d08305e3156f47698859d549119368ce@o561860.ingest.sentry.io/4505859179937792");
 		sentry_options_set_database_path(options, ".sentry-native");
-		sentry_options_set_release(options, "tello-gui@0.0.2.3");
+		sentry_options_set_release(options, version_cstr);
 		sentry_options_set_debug(options, 1);
 		sentry_init(options);
 		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::debug); });
@@ -89,13 +92,11 @@ int main()
 		sentry_options_t* options = sentry_options_new();
 		sentry_options_set_dsn(options, "https://d08305e3156f47698859d549119368ce@o561860.ingest.sentry.io/4505859179937792");
 		sentry_options_set_database_path(options, ".sentry-native");
-		sentry_options_set_release(options, "tello-gui@0.0.2.3");
+		sentry_options_set_release(options, version_cstr);
 		sentry_options_set_debug(options, 0);
 		sentry_init(options);
 		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::info); });
 	}
-
-	const char* app_version = "0.0.3.0";
 
 	spdlog::info("Initilizing GLFW!");
 
