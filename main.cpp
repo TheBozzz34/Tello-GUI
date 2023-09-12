@@ -49,6 +49,48 @@
 
 #pragma comment(lib, "wbemuuid.lib")
 
+// square vertices
+float vertices[] = {
+	 0.5f,  0.5f, 0.0f,  // top right
+	 0.5f, -0.5f, 0.0f,  // bottom right
+	-0.5f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f   // top left 
+};
+unsigned int indices[] = {  // note that we start from 0!
+	0, 1, 3,   // first triangle
+	1, 2, 3    // second triangle
+};
+
+
+
+const char* vertexShaderSource = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
+
+const char* fragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\0";
+
+
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
 
 void HideConsole()
 {
@@ -86,7 +128,7 @@ int main()
 {
     util utilFunction;
 	tello drone("192.168.10.1", 8889);
-	const char* app_version = "0.0.3.2";
+	const char* app_version = "0.0.3.3";
 	std::string version_string = "tello-gui@" + std::string(app_version);
 	const char* version_cstr = version_string.c_str();
 
@@ -159,7 +201,6 @@ int main()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 
 	// Setup Dear ImGui style
@@ -170,9 +211,13 @@ int main()
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
+	glViewport(0, 0, 800, 600);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
 
 
 	bool show_demo_window = false;
+	bool wireframe = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 
@@ -181,14 +226,108 @@ int main()
 
 	static char inputBuffer[256] = "";
 
+	bool openglDemo = false;
+
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+
+
+	
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		spdlog::debug("ERROR::SHADER::VERTEX::COMPILATION_FAILED" + std::string(infoLog));
+	}
+	else {
+		spdlog::debug("SHADER::VERTEX::COMPILATION:SUCCESS");
+	}
+
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		spdlog::debug("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" + std::string(infoLog));
+	}
+	else {
+		spdlog::debug("SHADER::FRAGMENT::COMPILATION:SUCCESS");
+	}
+
+
+	unsigned int shaderProgram;
+	shaderProgram = glCreateProgram();
+
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		spdlog::debug("ERROR::SHADER::PROGRAM::LINKING_FAILED" + std::string(infoLog));
+	}
+	else {
+		spdlog::debug("SHADER::PROGRAM::LINKING:SUCCESS");
+	}
+
+	glUseProgram(shaderProgram);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 3. copy our index array in a element buffer for OpenGL to use
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// 4. then set the vertex attributes pointers
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+		processInput(window);
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+		if (wireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
@@ -453,7 +592,6 @@ int main()
 
 
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
-			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 
 
 			ImGui::Text("Console");
@@ -514,13 +652,8 @@ int main()
 		{
 			ImGui::Begin("Settings");
 
-			ImGui::SetWindowPos(
-				ImVec2(0, 0),
-				true);
-
 
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
-			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 
 			ImGui::Text("Settings");
 			ImGui::Separator();
@@ -531,8 +664,15 @@ int main()
 			ImGui::Text("Drone Port");
 			// ImGui::InputInt("##DronePort", &drone.port); // TODO: Fix this
 
-			ImGui::Text("Show Demo Window");
+			ImGui::Text("Show ImGui Window");
 			ImGui::Checkbox("##ShowDemoWindow", &show_demo_window);
+
+			ImGui::Text("Show OpenGL Demo");
+			ImGui::Checkbox("##ShowOpenGLDemo", &openglDemo);
+
+			ImGui::Text("Toggle Wireframe");
+			ImGui::Checkbox("##Wireframe", &wireframe);
+
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
 			ImGui::Text("Toggle app console");
@@ -572,7 +712,6 @@ int main()
 		{
 			ImGui::Begin("About");
 			ImGui::SetWindowCollapsed(true, ImGuiCond_FirstUseEver);
-			ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 
 			ImGui::Text("Tello Control");
 			ImGui::Text("Version: %s", app_version);
@@ -588,9 +727,19 @@ int main()
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
-		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+		glClearColor(clear_color.x* clear_color.w, clear_color.y* clear_color.w, clear_color.z* clear_color.w, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		if (openglDemo)
+		{
+			glUseProgram(shaderProgram);
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+
+	
 
 		glfwSwapBuffers(window);
 	}
