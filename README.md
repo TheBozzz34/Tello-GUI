@@ -34,8 +34,17 @@ Communication based off the [Tello SDK](https://dl-cdn.ryzerobotics.com/download
 
 All my code in the form of commits, releases, etc. etc. is digitally signed with my personal GPG key [F2FE38E55D832A82](https://keys.openpgp.org/vks/v1/by-fingerprint/0951795ECB2C6DFD86DF2F7BF2FE38E55D832A82). 
 
+## Usage:
 
-## Prerequisites
+- Download the latest [release](https://github.com/TheBozzz34/Tello-GUI/releases)
+- Connect to your drone's wifi network
+- Run `Tello GUI.exe`
+- ### IMPORTANT! In order to use this you must first click the `refresh` button after connecting to the wifi network, this puts the drone in command mode.
+
+
+
+
+## Prerequisites for building
 
 Before you begin, ensure you have met the following requirements:
 
@@ -54,7 +63,7 @@ Before you begin, ensure you have met the following requirements:
 [![demo2](https://r2.e-z.host/66429241-79bf-4da7-b4b6-33cb201c59b4/14srricn.png)](https://botnet.monster/14srricn.png)
 ---
 
-## Getting Started
+## Getting Started for development
 
 Follow these steps to get started with the project:
 
