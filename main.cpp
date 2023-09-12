@@ -50,6 +50,22 @@
 #pragma comment(lib, "wbemuuid.lib")
 
 
+void HideConsole()
+{
+	::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+}
+
+void ShowConsole()
+{
+	::ShowWindow(::GetConsoleWindow(), SW_RESTORE);
+}
+
+bool IsConsoleVisible()
+{
+	return ::IsWindowVisible(::GetConsoleWindow()) != FALSE;
+}
+
+
 void ExportBufferToFile(const char* buffer, const char* path)
 {
 	std::ofstream file;
@@ -70,7 +86,7 @@ int main()
 {
     util utilFunction;
 	tello drone("192.168.10.1", 8889);
-	const char* app_version = "0.0.3.1";
+	const char* app_version = "0.0.3.2";
 	std::string version_string = "tello-gui@" + std::string(app_version);
 	const char* version_cstr = version_string.c_str();
 
@@ -518,6 +534,19 @@ int main()
 			ImGui::Text("Show Demo Window");
 			ImGui::Checkbox("##ShowDemoWindow", &show_demo_window);
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+			ImGui::Text("Toggle app console");
+			if (ImGui::Button("Toggle"))
+			{
+				if (IsConsoleVisible())
+				{
+					HideConsole();
+				}
+				else
+				{
+					ShowConsole();
+				}
+			}
 
 			if (DEBUG)
 			{

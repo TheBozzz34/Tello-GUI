@@ -55,9 +55,9 @@ void tello::send_command(const std::string& command, CommandCallback callback)
             if (!ec)
             {
                 // Timeout occurred, handle the timeout here.
-                spdlog::error("The command {} timed out because the drone did not respond, check the connection.", command);
+                //spdlog::error("The command {} timed out because the drone did not respond, check the connection.", command);
                 socket.cancel();  // Cancel the receive operation.
-                callback(0);
+                //callback(0);
             }
             });
 
@@ -74,6 +74,7 @@ void tello::send_command(const std::string& command, CommandCallback callback)
                 else
                 {
                     spdlog::error("Error receiving response: {}", recv_error.message());
+                    spdlog::error("Check the connection to the drone.");
                    // resultPromise.set_value(false); // Command failed
                     callback(0);
                 }
