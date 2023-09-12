@@ -28,7 +28,10 @@ Communication based off the [Tello SDK](https://dl-cdn.ryzerobotics.com/download
 | cw x      | Rotate “x” degrees clockwise.        |  
 | ccw x     | Rotate “x” degrees counterclockwise. |   
 
+## Other features
 
+- UDP Communication: Utilizes Boost.Asio for low-level UDP communication with the drone.
+- Crash management: Sentry.io used to log crashes and exceptions with the help of Google Crashpad
 
 ### Signing
 
@@ -95,7 +98,6 @@ Planned Features:
     Real-time Video Streaming: View live video feed from the Tello drone camera within the GUI.
     Easy Control: Use intuitive controls to take off, land, move the drone, and adjust camera settings.
     Status Monitoring: Monitor the drone's battery level, flight time, and other essential parameters.
-    UDP Communication: Utilizes Boost.Asio for low-level UDP communication with the drone.
 
 Contributing
 
