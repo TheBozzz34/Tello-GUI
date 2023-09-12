@@ -47,35 +47,8 @@
 #include <sentry.h>
 
 
-
-
 #pragma comment(lib, "wbemuuid.lib")
 
-void AppendToBuffer(const char* str, char* inputBuffer)
-{
-	// Get the current time
-	time_t currentTime;
-	time(&currentTime);
-
-	// Declare a structure to hold the local time
-	struct tm timeInfo;
-	localtime_s(&timeInfo, &currentTime);
-
-	// Format the time as a string
-	char timeStr[12]; // Adjust the size as needed for the time format
-	strftime(timeStr, sizeof(timeStr), "[%H:%M:%S]", &timeInfo);
-
-	// Append the formatted time to the buffer
-	int len = strlen(timeStr);
-	memcpy(&inputBuffer[strlen(inputBuffer)], timeStr, len);
-	inputBuffer[strlen(inputBuffer)] = ' '; // Add a space between time and the original string
-
-	// Append the original string
-	len = strlen(str);
-	memcpy(&inputBuffer[strlen(inputBuffer)], str, len);
-	inputBuffer[strlen(inputBuffer)] = '\n';
-	inputBuffer[strlen(inputBuffer)] = '\0';
-}
 
 void ExportBufferToFile(const char* buffer, const char* path)
 {
@@ -122,7 +95,7 @@ int main()
 		spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->set_level(spdlog::level::info); });
 	}
 
-	const char* app_version = "0.0.2.3";
+	const char* app_version = "0.0.3.0";
 
 	spdlog::info("Initilizing GLFW!");
 
@@ -227,13 +200,12 @@ int main()
 
 			ImGui::Text("Connected: %s", isConnected ? "true" : "false");
 
-	
 
 			if (ImGui::Button("Refresh"))
 			{
 				spdlog::info("Refreshing drone connection!");
 
-				AppendToBuffer("Refreshing drone connection!", inputBuffer);
+				utilFunction.AppendToBuffer("Refreshing drone connection!", inputBuffer);
 
 				drone.testConnection();
 
@@ -248,66 +220,49 @@ int main()
 				if (ImGui::Button("Takeoff"))
 				{
 					spdlog::info("Taking off!");
-					int response = drone.takeoff();
-					if (response == 0)
-					{
-						AppendToBuffer("Taking off!", inputBuffer);
-					}
-					else
-					{
-						AppendToBuffer("Error taking off!", inputBuffer);
-					}
-					spdlog::info("Response: {}", response);
+					utilFunction.AppendToBuffer("Taking off!", inputBuffer);
+					drone.takeoff([&](int response) {
+						if (response == 0)
+						{
+							utilFunction.AppendToBuffer("Error taking off!", inputBuffer);
+						}
+					});
 				}
 
 				if (ImGui::Button("Land"))
 				{
 					spdlog::info("Landing!");
-					int response = drone.land();
-
-					if (response == 0)
-					{
-						AppendToBuffer("Landing!", inputBuffer);
-					}
-					else
-					{
-						AppendToBuffer("Error landing!", inputBuffer);
-					}
-
-					spdlog::info("Response: {}", response);
+					utilFunction.AppendToBuffer("Landing!", inputBuffer);
+					drone.land([&](int response) {
+						if (response == 0)
+						{
+							utilFunction.AppendToBuffer("Error landing!", inputBuffer);
+						}
+						});
 				}
 
 				if (ImGui::Button("Emergency"))
 				{
 					spdlog::info("Emergency!");
-					int response = drone.emergency();
-
-					if (response == 0)
-					{
-						AppendToBuffer("Emergency!", inputBuffer);
-					}
-					else
-					{
-						AppendToBuffer("Error sending emergency command!", inputBuffer);
-					}
-
-					spdlog::info("Response: {}", response);
+					utilFunction.AppendToBuffer("Emergency!", inputBuffer);
+					drone.emergency([&](int response) {
+						if (response == 0)
+						{
+							utilFunction.AppendToBuffer("Error sending Emergency!", inputBuffer);
+						}
+						});
 				}
 
 				if (ImGui::Button("Stop"))
 				{
 					spdlog::info("Stopping!");
-					int response = drone.stop();
-
-					if (response == 0)
-					{
-						AppendToBuffer("Stopping!", inputBuffer);
-					}
-					else
-					{
-						AppendToBuffer("Error stopping!", inputBuffer);
-					}
-					spdlog::info("Response: {}", response);
+					utilFunction.AppendToBuffer("Stopping!", inputBuffer);
+					drone.stop([&](int response) {
+						if (response == 0)
+						{
+							utilFunction.AppendToBuffer("Error stopping!", inputBuffer);
+						}
+						});
 				}
 			}
 
@@ -370,13 +325,25 @@ int main()
 					case 1:
 						if (ImGui::ArrowButton("##Up", ImGuiDir_Up)) 
 						{
-							drone.up(20);
+							utilFunction.AppendToBuffer("Moving up!", inputBuffer);
+							drone.up(20, [&](int response) {
+								if (response == 0)
+								{
+									utilFunction.AppendToBuffer("Error moving up!", inputBuffer);
+								}
+								});
 						}
 						break;
 					case 3:
 						if (ImGui::ArrowButton("##Left", ImGuiDir_Left)) 
 						{
-							drone.left(20);
+							utilFunction.AppendToBuffer("Moving left!", inputBuffer);
+							drone.left(20, [&](int response) {
+								if (response == 0)
+								{
+									utilFunction.AppendToBuffer("Error moving left!", inputBuffer);
+								}
+								});
 						}
 						break;
 					case 4:
@@ -385,13 +352,25 @@ int main()
 					case 5:
 						if (ImGui::ArrowButton("##Right", ImGuiDir_Right)) 
 						{
-							drone.right(20);
+							utilFunction.AppendToBuffer("Moving right!", inputBuffer);
+							drone.right(20, [&](int response) {
+								if (response == 0)
+								{
+									utilFunction.AppendToBuffer("Error moving right!", inputBuffer);
+								}
+								});
 						}
 						break;
 					case 7:
 						if (ImGui::ArrowButton("##Down", ImGuiDir_Down)) 
 						{
-							drone.down(20);
+							utilFunction.AppendToBuffer("Moving down!", inputBuffer);
+							drone.down(20, [&](int response) {
+								if (response == 0)
+								{
+									utilFunction.AppendToBuffer("Error moving down!", inputBuffer);
+								}
+								});
 						}
 						break;
 					}
@@ -411,13 +390,25 @@ int main()
 					case 1:
 						if (ImGui::ArrowButton("##CW", ImGuiDir_Right))
 						{
-							drone.cw(20);
+							utilFunction.AppendToBuffer("Moving cw!", inputBuffer);
+							drone.cw(20, [&](int response) {
+								if (response == 0)
+								{
+									utilFunction.AppendToBuffer("Error Moving cw!", inputBuffer);
+								}
+								});
 						}
 						break;
 					case 3:
 						if (ImGui::ArrowButton("##CCW", ImGuiDir_Left))
 						{
-							drone.ccw(20);
+							utilFunction.AppendToBuffer("Moving ccw!", inputBuffer);
+							drone.ccw(20, [&](int response) {
+								if (response == 0)
+								{
+									utilFunction.AppendToBuffer("Error moving ccw!", inputBuffer);
+								}
+								});
 						}
 						break;
 					}
@@ -477,7 +468,7 @@ int main()
 						path += "\\console.txt";
 						ExportBufferToFile(inputBuffer, path.c_str());
 						std::string message = "Exported buffer to " + path;
-						AppendToBuffer(message.c_str(), inputBuffer);
+						utilFunction.AppendToBuffer(message.c_str(), inputBuffer);
 					}
 					// Free the PIDL
 					IMalloc* pMalloc;

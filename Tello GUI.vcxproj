@@ -154,8 +154,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\examples\libs\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="tello.h" />
     <ClInclude Include="util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="uav-quadcopter.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

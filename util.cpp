@@ -18,3 +18,29 @@ std::string util::exec(const char* cmd) {
     }
     return result;
 }
+
+void util::AppendToBuffer(const char* str, char* inputBuffer)
+{
+	// Get the current time
+	time_t currentTime;
+	time(&currentTime);
+
+	// Declare a structure to hold the local time
+	struct tm timeInfo;
+	localtime_s(&timeInfo, &currentTime);
+
+	// Format the time as a string
+	char timeStr[12]; // Adjust the size as needed for the time format
+	strftime(timeStr, sizeof(timeStr), "[%H:%M:%S]", &timeInfo);
+
+	// Append the formatted time to the buffer
+	int len = strlen(timeStr);
+	memcpy(&inputBuffer[strlen(inputBuffer)], timeStr, len);
+	inputBuffer[strlen(inputBuffer)] = ' '; // Add a space between time and the original string
+
+	// Append the original string
+	len = strlen(str);
+	memcpy(&inputBuffer[strlen(inputBuffer)], str, len);
+	inputBuffer[strlen(inputBuffer)] = '\n';
+	inputBuffer[strlen(inputBuffer)] = '\0';
+}
