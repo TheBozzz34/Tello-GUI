@@ -37,12 +37,11 @@ int tello::send_command(const std::string& command)
 }
 
 void tello::ReceiveThread() {
-    while (isListening_) {
+    for (char receivedData[1024]; isListening_;) {
         try {
-            char receivedData[1024];
             boost::system::error_code error;
-
             size_t len = socket.receive_from(boost::asio::buffer(receivedData), remote_endpoint, 0, error);
+            spdlog::info(remote_endpoint.address().to_string());
 
             if (error && error != boost::asio::error::message_size) {
                 throw boost::system::system_error(error);
@@ -50,9 +49,9 @@ void tello::ReceiveThread() {
 
             receivedData[len] = '\0';
 
-            std::cout << "Received UDP data: " << receivedData << std::endl;
+            spdlog::info("Received data: {}", receivedData);
         }
-        catch (const std::exception& e) {
+        catch (std::exception const& e) {
             std::cerr << "Error receiving UDP data: " << e.what() << std::endl;
         }
     }

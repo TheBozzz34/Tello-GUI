@@ -130,7 +130,7 @@ int main()
 
 	boost::asio::io_service io_service;
 	boost::asio::ip::udp::socket socket(io_service);
-	boost::asio::ip::udp::endpoint remote_endpoint(boost::asio::ip::address::from_string("192.168.0.1"), 12345); // Replace with the actual IP address and port
+	boost::asio::ip::udp::endpoint remote_endpoint(boost::asio::ip::address::from_string("192.168.10.1"), 12345); // Replace with the actual IP address and port
 	socket.open(boost::asio::ip::udp::v4());
 
 	// Simulate the application running
