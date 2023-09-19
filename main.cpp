@@ -49,6 +49,7 @@
 
 #pragma comment(lib, "wbemuuid.lib")
 
+
 // square vertices
 float vertices[] = {
 	 0.5f,  0.5f, 0.0f,  // top right
@@ -126,11 +127,22 @@ static void glfw_error_callback(int error, const char* description)
 
 int main()
 {
+
+	boost::asio::io_service io_service;
+	boost::asio::ip::udp::socket socket(io_service);
+	boost::asio::ip::udp::endpoint remote_endpoint(boost::asio::ip::address::from_string("192.168.0.1"), 12345); // Replace with the actual IP address and port
+	socket.open(boost::asio::ip::udp::v4());
+
+	// Simulate the application running
+	std::cout << "Listening for UDP responses..." << std::endl;
+
     util utilFunction;
-	tello drone("192.168.10.1", 8889);
+	tello drone(io_service, socket, remote_endpoint);
 	const char* app_version = "0.0.3.3";
 	std::string version_string = "tello-gui@" + std::string(app_version);
 	const char* version_cstr = version_string.c_str();
+
+	drone.StartListening();
 
 	if (DEBUG)
 	{
@@ -228,6 +240,7 @@ int main()
 
 	bool openglDemo = false;
 
+
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 
@@ -309,6 +322,7 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -357,15 +371,22 @@ int main()
 			ImGui::Text("Connected: %s", isConnected ? "true" : "false");
 
 
-			if (ImGui::Button("Refresh"))
+			if (ImGui::Button("Connect"))
 			{
-				spdlog::info("Refreshing drone connection!");
+				spdlog::info("Initiating drone connection!");
 
-				utilFunction.AppendToBuffer("Refreshing drone connection!", inputBuffer);
+				if (socket.is_open())
+				{
+					spdlog::info("Socket is already open!");
+				}
+				else
+				{
+					spdlog::info("Socket is not open! This is a problem, please restart the app.");
+				}
 
-				drone.testConnection();
+				utilFunction.AppendToBuffer("Initiating drone connection!", inputBuffer);
+				drone.initConnection();
 
-				isConnected = drone.isConnected();
 			}
 
 			ImGui::Separator();
@@ -377,48 +398,28 @@ int main()
 				{
 					spdlog::info("Taking off!");
 					utilFunction.AppendToBuffer("Taking off!", inputBuffer);
-					drone.takeoff([&](int response) {
-						if (response == 0)
-						{
-							utilFunction.AppendToBuffer("Error taking off!", inputBuffer);
-						}
-					});
+					drone.takeoff();
 				}
 
 				if (ImGui::Button("Land"))
 				{
 					spdlog::info("Landing!");
 					utilFunction.AppendToBuffer("Landing!", inputBuffer);
-					drone.land([&](int response) {
-						if (response == 0)
-						{
-							utilFunction.AppendToBuffer("Error landing!", inputBuffer);
-						}
-						});
+					drone.land();
 				}
 
 				if (ImGui::Button("Emergency"))
 				{
 					spdlog::info("Emergency!");
 					utilFunction.AppendToBuffer("Emergency!", inputBuffer);
-					drone.emergency([&](int response) {
-						if (response == 0)
-						{
-							utilFunction.AppendToBuffer("Error sending Emergency!", inputBuffer);
-						}
-						});
+					drone.emergency();
 				}
 
 				if (ImGui::Button("Stop"))
 				{
 					spdlog::info("Stopping!");
 					utilFunction.AppendToBuffer("Stopping!", inputBuffer);
-					drone.stop([&](int response) {
-						if (response == 0)
-						{
-							utilFunction.AppendToBuffer("Error stopping!", inputBuffer);
-						}
-						});
+					drone.stop();
 				}
 			}
 
@@ -482,24 +483,14 @@ int main()
 						if (ImGui::ArrowButton("##Up", ImGuiDir_Up)) 
 						{
 							utilFunction.AppendToBuffer("Moving up!", inputBuffer);
-							drone.up(20, [&](int response) {
-								if (response == 0)
-								{
-									utilFunction.AppendToBuffer("Error moving up!", inputBuffer);
-								}
-								});
+							drone.up(20);
 						}
 						break;
 					case 3:
 						if (ImGui::ArrowButton("##Left", ImGuiDir_Left)) 
 						{
 							utilFunction.AppendToBuffer("Moving left!", inputBuffer);
-							drone.left(20, [&](int response) {
-								if (response == 0)
-								{
-									utilFunction.AppendToBuffer("Error moving left!", inputBuffer);
-								}
-								});
+							drone.left(20);
 						}
 						break;
 					case 4:
@@ -509,24 +500,14 @@ int main()
 						if (ImGui::ArrowButton("##Right", ImGuiDir_Right)) 
 						{
 							utilFunction.AppendToBuffer("Moving right!", inputBuffer);
-							drone.right(20, [&](int response) {
-								if (response == 0)
-								{
-									utilFunction.AppendToBuffer("Error moving right!", inputBuffer);
-								}
-								});
+							drone.right(20);
 						}
 						break;
 					case 7:
 						if (ImGui::ArrowButton("##Down", ImGuiDir_Down)) 
 						{
 							utilFunction.AppendToBuffer("Moving down!", inputBuffer);
-							drone.down(20, [&](int response) {
-								if (response == 0)
-								{
-									utilFunction.AppendToBuffer("Error moving down!", inputBuffer);
-								}
-								});
+							drone.down(20);
 						}
 						break;
 					}
@@ -547,24 +528,14 @@ int main()
 						if (ImGui::ArrowButton("##CW", ImGuiDir_Right))
 						{
 							utilFunction.AppendToBuffer("Moving cw!", inputBuffer);
-							drone.cw(20, [&](int response) {
-								if (response == 0)
-								{
-									utilFunction.AppendToBuffer("Error Moving cw!", inputBuffer);
-								}
-								});
+							drone.cw(20);
 						}
 						break;
 					case 3:
 						if (ImGui::ArrowButton("##CCW", ImGuiDir_Left))
 						{
 							utilFunction.AppendToBuffer("Moving ccw!", inputBuffer);
-							drone.ccw(20, [&](int response) {
-								if (response == 0)
-								{
-									utilFunction.AppendToBuffer("Error moving ccw!", inputBuffer);
-								}
-								});
+							drone.ccw(20);
 						}
 						break;
 					}
@@ -611,7 +582,7 @@ int main()
 				bi.hwndOwner = NULL; 
 				bi.pidlRoot = NULL;  
 				bi.pszDisplayName = (LPWSTR)selectedPath;
-				bi.lpszTitle = (LPWSTR)"Select a directory";  // Dialog title
+				bi.lpszTitle = (LPWSTR)"Select a directory";  // I know this is not good, I can't figure out how to convert a string to LPWSTR without vs studio complaining
 				bi.ulFlags = BIF_RETURNONLYFSDIRS; 
 
 				LPITEMIDLIST pidl = SHBrowseForFolderA((LPBROWSEINFOA) & bi);
@@ -738,11 +709,14 @@ int main()
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
-
 	
 
 		glfwSwapBuffers(window);
 	}
+
+	drone.StopListening();
+	socket.close();
+
 
 	// Cleanup ImGui resources
 	ImGui_ImplOpenGL3_Shutdown();
@@ -758,4 +732,5 @@ int main()
 	return 0;
 
 }
+
 
