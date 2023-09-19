@@ -57,9 +57,9 @@ float vertices[] = {
 	-0.5f, -0.5f, 0.0f,  // bottom left
 	-0.5f,  0.5f, 0.0f   // top left 
 };
-unsigned int indices[] = {  // note that we start from 0!
-	0, 1, 3,   // first triangle
-	1, 2, 3    // second triangle
+unsigned int indices[] = {  
+	0, 1, 3,  
+	1, 2, 3   
 };
 
 
@@ -357,7 +357,7 @@ int main()
 				utilFunction.exec("netsh wlan show interfaces > ssid.txt");
 				std::ifstream ReadFile("ssid.txt");
 				while (getline(ReadFile, ssidText)) {
-					// Output the text from the file
+					// Output the text from the file, super jank ik
 					std::cout << ssidText << std::endl;
 				}
 				ReadFile.close();
@@ -516,7 +516,7 @@ int main()
 				ImGui::PopButtonRepeat();
 				ImGui::EndChild();
 
-				ImGui::BeginChild("RotateButtons", { 210, 70 }); // Increase the width to accommodate three buttons with spacing
+				ImGui::BeginChild("RotateButtons", { 210, 70 }); // Increase the width to accommodate three buttons with spacing, needs less spacing
 				ImGui::Columns(3, nullptr, false);
 				ImGui::PushButtonRepeat(true);
 
@@ -542,7 +542,7 @@ int main()
 
 					if (i < 8)
 					{
-						ImGui::SameLine(); // Add this to keep the buttons on the same line with spacing
+						ImGui::SameLine(); 
 					}
 
 					ImGui::NextColumn();
@@ -575,7 +575,8 @@ int main()
 			ImGui::SameLine();
 			if (ImGui::Button("Export"))
 			{
-				
+
+				// Why in the holy hell is the windows api so stupid
 				BROWSEINFO bi = { 0 };
 				char selectedPath[MAX_PATH] = { 0 };
 
