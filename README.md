@@ -58,6 +58,8 @@ Before you begin, ensure you have met the following requirements:
 - spdlog library
 - Sentry.io Native SDK
 - Google Crashpad, in the form of `crashpad_handler.exe`
+    - [Build Instructions](https://chromium.googlesource.com/crashpad/crashpad/+/HEAD/doc/developing.md)
+    - [My prebuilt binaries](https://necrozma.xyz/pub/Default.zip) 
 
 ---
 
