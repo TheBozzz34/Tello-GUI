@@ -5,16 +5,15 @@
 #include <spdlog/spdlog.h>
 #include <future>
 
-tello::tello(boost::asio::io_service& io_service, boost::asio::ip::udp::socket& socket, const boost::asio::ip::udp::endpoint& remote_endpoint)
-    : ip(remote_endpoint.address().to_string()),
-    port(remote_endpoint.port()),
-    io_service(io_service),
-    socket(socket),
-    remote_endpoint(remote_endpoint)
+tello::tello(boost::asio::io_context& io_context, boost::asio::ip::udp::socket& socket, boost::asio::ip::udp::endpoint const& remote_endpoint)
+    : ip(remote_endpoint.address().to_string())
+    , port(remote_endpoint.port())
+    , io_context(io_context)
+    , socket(socket)
+    , remote_endpoint(remote_endpoint) //
 {
-
+    socket.bind(remote_endpoint);
 }
-
 
 
 int tello::send_command(const std::string& command)
@@ -41,7 +40,6 @@ void tello::ReceiveThread() {
         try {
             boost::system::error_code error;
             size_t len = socket.receive_from(boost::asio::buffer(receivedData), remote_endpoint, 0, error);
-            spdlog::info(remote_endpoint.address().to_string());
 
             if (error && error != boost::asio::error::message_size) {
                 throw boost::system::system_error(error);
@@ -49,7 +47,9 @@ void tello::ReceiveThread() {
 
             receivedData[len] = '\0';
 
-            spdlog::info("Received data: {}", receivedData);
+            spdlog::info("Received UDP data: {}", receivedData);
+
+            //spdlog::info("Received UDP data: {}", std::string_view(receivedData, len));
         }
         catch (std::exception const& e) {
             std::cerr << "Error receiving UDP data: " << e.what() << std::endl;

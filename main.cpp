@@ -128,21 +128,22 @@ static void glfw_error_callback(int error, const char* description)
 int main()
 {
 
-	boost::asio::io_service io_service;
-	boost::asio::ip::udp::socket socket(io_service);
-	boost::asio::ip::udp::endpoint remote_endpoint(boost::asio::ip::address::from_string("192.168.10.1"), 12345); // Replace with the actual IP address and port
+	boost::asio::io_context io_context;
+	boost::asio::ip::udp::socket      socket(io_context);
+	boost::asio::ip::udp::endpoint    remote_endpoint({}, 12345);
 	socket.open(boost::asio::ip::udp::v4());
+	tello drone(io_context, socket, remote_endpoint);
+	drone.StartListening();
 
 	// Simulate the application running
 	std::cout << "Listening for UDP responses..." << std::endl;
 
     util utilFunction;
-	tello drone(io_service, socket, remote_endpoint);
 	const char* app_version = "0.0.3.3";
 	std::string version_string = "tello-gui@" + std::string(app_version);
 	const char* version_cstr = version_string.c_str();
 
-	drone.StartListening();
+
 
 	if (DEBUG)
 	{
@@ -716,7 +717,6 @@ int main()
 	}
 
 	drone.StopListening();
-	socket.close();
 
 
 	// Cleanup ImGui resources

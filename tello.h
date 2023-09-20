@@ -16,12 +16,13 @@ private:
 	std::string battery;
 	std::string time;
 	std::string wifi;
-	boost::asio::io_service& io_service;
+	boost::asio::io_context& io_context;
 	boost::asio::ip::udp::socket& socket;
 	boost::asio::ip::udp::endpoint remote_endpoint;
-	bool isListening_;
+	std::atomic_bool isListening_{true};
+	std::thread udpThread;
 public:
-	tello(boost::asio::io_service& io_service, boost::asio::ip::udp::socket& socket, const boost::asio::ip::udp::endpoint& remote_endpoint);
+	tello(boost::asio::io_context& io_context, boost::asio::ip::udp::socket& socket, const boost::asio::ip::udp::endpoint& remote_endpoint);
 	void ReceiveThread();
 	void StartListening();
 	void StopListening();
