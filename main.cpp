@@ -130,7 +130,7 @@ int main()
 
 	boost::asio::io_context io_context;
 	boost::asio::ip::udp::socket      socket(io_context);
-	boost::asio::ip::udp::endpoint    remote_endpoint({}, 12345);
+	boost::asio::ip::udp::endpoint    remote_endpoint(boost::asio::ip::address::from_string("192.168.10.1"), 12345);
 	socket.open(boost::asio::ip::udp::v4());
 	tello drone(io_context, socket, remote_endpoint);
 	drone.StartListening();

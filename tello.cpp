@@ -24,6 +24,7 @@ int tello::send_command(const std::string& command)
     if (err)
     {
         spdlog::error("Error sending command: {}", err.message());
+        spdlog::error("Address: {}", remote_endpoint.address().to_string());
 
         return -1;
     }
